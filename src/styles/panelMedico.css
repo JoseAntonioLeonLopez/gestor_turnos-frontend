@@ -1,0 +1,176 @@
+/* Estilos generales del panel */
+.panel-medico {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  border: 2px solid #007f3d;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0, 127, 61, 0.2);
+  max-width: 500px;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.panel-medico h2 {
+  font-size: 2rem;
+  color: #007f3d;
+  margin-bottom: 20px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Estados del turno */
+.panel-medico p {
+  font-size: 1.5rem;
+  color: #555;
+  margin: 20px 0;
+  font-weight: bold;
+}
+
+/* Botones */
+.panel-medico button {
+  background-color: #007f3d;
+  color: #fff;
+  font-size: 1.4rem;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 300px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.panel-medico button:hover {
+  background-color: #005f2b;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Mensajes de estado */
+.panel-medico .estado-espera {
+  color: #007f3d;
+}
+
+.panel-medico .estado-llamado {
+  color: #ff9800;
+  font-size: 1.6rem;
+}
+
+.panel-medico .estado-atendiendo {
+  color: #d32f2f;
+  font-size: 1.6rem;
+}
+
+.panel-medico .estado-sin-turnos {
+  color: #757575;
+  font-size: 1.4rem;
+}
+
+/* Turnos en espera */
+.turnos-en-espera {
+  margin-top: 20px; /* Menos espacio entre los turnos */
+  width: 100%;
+  max-width: 350px; /* Ajusté el ancho para que ocupe menos espacio */
+  margin: 0 auto;
+}
+
+.turnos-en-espera h3 {
+  font-size: 1.4rem; /* Tamaño más pequeño */
+  color: #007f3d;
+  margin-bottom: 10px; /* Menos espacio entre el título y la lista */
+}
+
+.turnos-en-espera ul {
+  list-style: none;
+  padding: 0;
+}
+
+.turnos-en-espera li {
+  font-size: 1rem; /* Tamaño más pequeño para los elementos de la lista */
+  color: #555;
+  padding: 8px; /* Menos espacio dentro de cada elemento */
+  border: 1px solid #007f3d;
+  margin: 5px 0;
+  border-radius: 6px; /* Bordes más redondeados */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.turnos-en-espera li p {
+  margin: 0; /* Para evitar márgenes innecesarios en el texto */
+  font-size: 1rem;
+}
+
+/* Diseño responsivo */
+@media (max-width: 768px) {
+  .turnos-en-espera h3 {
+    font-size: 1.3rem; /* Ajuste el tamaño para pantallas más pequeñas */
+  }
+
+  .turnos-en-espera li {
+    font-size: 0.9rem; /* Más pequeño para pantallas pequeñas */
+    padding: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .turnos-en-espera h3 {
+    font-size: 1.2rem; /* Un poco más pequeño en pantallas muy pequeñas */
+  }
+
+  .turnos-en-espera li {
+    font-size: 0.8rem;
+    padding: 5px;
+  }
+}
+
+/* Diseño responsivo */
+@media (max-width: 768px) {
+  .panel-medico {
+    padding: 30px;
+    max-width: 90%;
+  }
+
+  .panel-medico h2 {
+    font-size: 1.8rem;
+  }
+
+  .panel-medico p {
+    font-size: 1.3rem;
+  }
+
+  .panel-medico button {
+    font-size: 1.2rem;
+    padding: 12px 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .panel-medico {
+    padding: 20px;
+  }
+
+  .panel-medico h2 {
+    font-size: 1.6rem;
+  }
+
+  .panel-medico p {
+    font-size: 1.2rem;
+  }
+
+  .panel-medico button {
+    font-size: 1rem;
+    padding: 10px 20px;
+  }
+}

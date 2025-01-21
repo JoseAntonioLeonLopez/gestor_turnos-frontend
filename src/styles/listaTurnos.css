@@ -1,0 +1,106 @@
+/* Contenedor principal */
+.lista-turnos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  color: #333;
+  background-color: #ffffff; /* Fondo blanco para resaltar el borde */
+  border: 2px solid #007f3d; /* Borde verde como el otro componente */
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 127, 61, 0.2);
+  max-width: 500px;
+  width: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Efecto al pasar el ratón sobre el contenedor */
+.lista-turnos:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 127, 61, 0.3);
+}
+
+/* Título de la lista */
+.lista-turnos__titulo {
+  font-size: 2rem;
+  color: #007f3d;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Contenedor de la lista */
+.lista-turnos__contenedor {
+  list-style: none;
+  padding: 0;
+  max-width: 400px;
+  width: 100%;
+  border: 2px solid #007f3d;
+  border-radius: 10px;
+  background-color: #e6f4ea;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Elemento de la lista */
+.lista-turnos__item {
+  font-size: 1.5rem;
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid #007f3d;
+  transition: background 0.3s ease;
+}
+
+/* Último elemento sin borde inferior */
+.lista-turnos__item:last-child {
+  border-bottom: none;
+}
+
+/* Efecto hover */
+.lista-turnos__item:hover {
+  background-color: #d4f5d6;
+  cursor: pointer;
+}
+
+/* Mensaje de no turnos */
+.lista-turnos__mensaje {
+  font-size: 1.5rem;
+  color: #555;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Diseño responsivo */
+@media (max-width: 768px) {
+  .lista-turnos__titulo {
+    font-size: 1.8rem;
+  }
+
+  .lista-turnos__contenedor {
+    max-width: 100%;
+  }
+
+  .lista-turnos__item {
+    font-size: 1.2rem;
+    padding: 12px;
+  }
+
+  .lista-turnos__mensaje {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .lista-turnos__titulo {
+    font-size: 1.5rem;
+  }
+
+  .lista-turnos__item {
+    font-size: 1rem;
+    padding: 10px;
+  }
+
+  .lista-turnos__mensaje {
+    font-size: 1rem;
+  }
+}
