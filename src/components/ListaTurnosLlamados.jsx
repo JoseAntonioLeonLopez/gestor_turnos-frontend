@@ -4,10 +4,13 @@ import { useWebSocket } from '../hooks/useWebSocket';
 import '../styles/ListaTurnos.css';
 
 const ListaTurnosLlamados = () => {
+  // Estado para almacenar los turnos llamados
   const [turnosLlamados, setTurnosLlamados] = useState([]);
+  // Hook personalizado para manejar WebSocket
   const { socket } = useWebSocket();
 
   useEffect(() => {
+    // Función para obtener los turnos llamados desde la API
     const fetchTurnosLlamados = async () => {
       try {
         const turnos = await verTurnosLlamados();
@@ -17,13 +20,17 @@ const ListaTurnosLlamados = () => {
       }
     };
 
+    // Llamar a la función para obtener los turnos
     fetchTurnosLlamados();
 
+    // Configurar el listener de WebSocket para nuevos turnos
     if (socket) {
       socket.on('nuevoTurno', (turno) => {
         if (turno.estado === 'llamado') {
+          // Añadir nuevo turno llamado
           setTurnosLlamados(prevTurnos => [...prevTurnos, turno]);
         } else {
+          // Remover turno si ya no está en estado "llamado"
           setTurnosLlamados(prevTurnos => 
             prevTurnos.filter(t => t.id !== turno.id)
           );
@@ -31,6 +38,7 @@ const ListaTurnosLlamados = () => {
       });
     }
 
+    // Limpiar el listener al desmontar el componente
     return () => {
       if (socket) {
         socket.off('nuevoTurno');
@@ -38,6 +46,7 @@ const ListaTurnosLlamados = () => {
     };
   }, [socket]);
 
+  // Renderizar la lista de turnos llamados
   return (
     <div className="lista-turnos">
       <h2 className="lista-turnos__titulo">Turnos Llamados</h2>

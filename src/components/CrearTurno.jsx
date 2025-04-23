@@ -4,21 +4,24 @@ import { useWebSocket } from '../hooks/useWebSocket';
 import '../styles/CrearTurno.css';
 
 const CrearTurno = () => {
+  // Estados para manejar el turno, cuenta regresiva, nombre y validación
   const [turno, setTurno] = useState(null);
   const [countdown, setCountdown] = useState(5);
   const { socket } = useWebSocket();
   const [nombre, setNombre] = useState('');
   const [nombreValido, setNombreValido] = useState(false);
 
+  // Manejar cambios en el input del nombre y validar
   const handleNombreChange = (e) => {
     const input = e.target.value;
     setNombre(input);
   
-    // Validación simple (mínimo 3, máximo 50 caracteres, solo letras y espacios)
+    // Validación: 3-50 caracteres, solo letras y espacios
     const esValido = /^[a-zA-Z\s]{3,50}$/.test(input);
     setNombreValido(esValido);
   };
 
+  // Generar un nuevo turno
   const handleGenerarTurno = async () => {
     if (!nombreValido) return;
     
@@ -31,6 +34,7 @@ const CrearTurno = () => {
     }
   };
 
+  // Efecto para manejar la cuenta regresiva
   useEffect(() => {
     let timer;
     if (turno && countdown > 0) {
@@ -42,6 +46,7 @@ const CrearTurno = () => {
     return () => clearTimeout(timer);
   }, [turno, countdown]);
 
+  // Efecto para escuchar nuevos turnos vía WebSocket
   useEffect(() => {
     if (socket) {
       socket.on('nuevoTurno', (nuevoTurno) => {
@@ -55,15 +60,18 @@ const CrearTurno = () => {
     };
   }, [socket]);
 
+  // Renderizado del componente
   return (
     <div className="turno-container">
       {turno ? (
+        // Mostrar información del turno generado
         <div>
           <h2>Tu turno es: {turno.codigo}</h2>
           <p>Nombre: {turno.nombre}</p>
           <p>Tiempo restante: {countdown} segundos</p>
         </div>
       ) : (
+        // Formulario para generar un nuevo turno
         <div className="input-container">
           <input
             type="text"

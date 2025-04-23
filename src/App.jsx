@@ -8,6 +8,7 @@ function App() {
   return (
     <WebSocketProvider>
       <Router>
+        {/* Define las rutas de la aplicación */}
         <Routes>
           <Route path="/" element={<CrearTurnoPage />} />
           <Route path="/llamados" element={<TurnosLlamadosPage />} />

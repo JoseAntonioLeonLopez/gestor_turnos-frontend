@@ -4,11 +4,13 @@ import { useWebSocket } from '../hooks/useWebSocket';
 import '../styles/PanelMedico.css';
 
 const PanelMedico = () => {
+  // Estados para manejar el turno actual, estado del panel y turnos en espera
   const [turnoActual, setTurnoActual] = useState(null);
   const [estado, setEstado] = useState('espera'); // 'espera', 'llamado', 'atendiendo', 'sin_turnos'
   const [turnosEnEspera, setTurnosEnEspera] = useState([]);
   const { socket } = useWebSocket();
 
+  // Función para avanzar al siguiente turno
   const handleAvanzarTurno = async () => {
     try {
       const nuevoTurno = await avanzarTurno();
@@ -26,6 +28,7 @@ const PanelMedico = () => {
     }
   };
 
+  // Función para atender el turno actual
   const handleAtenderTurno = async () => {
     try {
       const turnoAtendiendo = await atenderTurno();
@@ -36,6 +39,7 @@ const PanelMedico = () => {
     }
   };
 
+  // Función para finalizar el turno actual
   const handleFinalizarTurno = async () => {
     try {
       await finalizarTurno();
@@ -46,6 +50,7 @@ const PanelMedico = () => {
     }
   };
 
+  // Función para obtener los turnos en espera
   const obtenerTurnosEnEspera = async () => {
     try {
       const turnos = await verTurnosEnEspera();
@@ -55,29 +60,31 @@ const PanelMedico = () => {
     }
   };
 
+  // Efecto para cargar turnos en espera y manejar eventos de WebSocket
   useEffect(() => {
-    obtenerTurnosEnEspera(); // Cargar los turnos en espera cuando se monta el componente
+    obtenerTurnosEnEspera();
   
     if (socket) {
+      // Manejar nuevos turnos
       socket.on('nuevoTurno', (turno) => {
         if (turno.estado === 'llamado') {
           setTurnoActual(turno);
           setEstado('llamado');
         } else if (turno.estado === 'en espera') {
           setTurnosEnEspera((prevTurnos) => {
-            // Filtra los turnos para no agregar duplicados
             const nuevosTurnos = prevTurnos.filter(t => t.codigo !== turno.codigo);
             return [...nuevosTurnos, turno];
           });
         }
       });      
   
+      // Actualizar lista de turnos en espera
       socket.on('turnosEnEspera', (turnosEnEspera) => {
-        // Actualizar la lista de turnos en espera con los nuevos datos
         setTurnosEnEspera(turnosEnEspera);
       });
     }
   
+    // Limpiar listeners al desmontar
     return () => {
       if (socket) {
         socket.off('nuevoTurno');
@@ -86,9 +93,11 @@ const PanelMedico = () => {
     };
   }, [socket]);
 
+  // Renderizado del componente
   return (
     <div className="panel-medico">
       <h2>Panel Médico</h2>
+      {/* Lista de turnos en espera */}
       <div className="turnos-en-espera">
         <h3>Turnos en Espera:</h3>
         <ul>
@@ -100,6 +109,7 @@ const PanelMedico = () => {
         </ul>
       </div>
 
+      {/* Renderizado condicional basado en el estado */}
       {estado === 'espera' && (
         <div className="estado-espera">
           <p>Esperando turno...</p>
