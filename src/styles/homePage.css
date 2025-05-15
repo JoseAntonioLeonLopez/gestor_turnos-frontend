@@ -1,0 +1,88 @@
+/* Estilos para el html y body */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Esto elimina el scroll */
+}
+
+body {
+  background: linear-gradient(180deg, #e6f4ea 0%, #c8e6c9 100%);
+  background-attachment: fixed; /* Esto asegura que el fondo se mantenga fijo */
+}
+
+/* Estilos para el componente HomePage */
+.home-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+  margin-bottom: 30%;
+}
+
+.home-page h1 {
+  font-size: 2.5rem;
+  color: #007f3d;
+  margin-bottom: 40px;
+  text-align: center;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 300px;
+  width: 100%;
+}
+
+.nav-button {
+  background-color: #007f3d;
+  color: #fff;
+  font-size: 1.4rem;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  display: block;
+}
+
+.nav-button:hover {
+  background-color: #005f2b;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Media queries para responsividad */
+@media (max-width: 768px) {
+  .home-page h1 {
+    font-size: 2rem;
+  }
+
+  .nav-button {
+    font-size: 1.2rem;
+    padding: 12px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-page h1 {
+    font-size: 1.8rem;
+  }
+
+  .nav-button {
+    font-size: 1.1rem;
+    padding: 10px 15px;
+  }
+}

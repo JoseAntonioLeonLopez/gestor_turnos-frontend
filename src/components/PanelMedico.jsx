@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { avanzarTurno, atenderTurno, finalizarTurno, verTurnosEnEspera } from '../services/api';
 import { useWebSocket } from '../hooks/useWebSocket';
 import '../styles/PanelMedico.css';
 
 const PanelMedico = () => {
-  // Estados para manejar el turno actual, estado del panel y turnos en espera
+  // Estados para manejar el turno actual, el estado del panel y los turnos en espera
   const [turnoActual, setTurnoActual] = useState(null);
-  const [estado, setEstado] = useState('espera'); // 'espera', 'llamado', 'atendiendo', 'sin_turnos'
+  const [estado, setEstado] = useState('espera');
   const [turnosEnEspera, setTurnosEnEspera] = useState([]);
+  
+  // Hook personalizado para manejar la conexión WebSocket
   const { socket } = useWebSocket();
-
+  
   // Función para avanzar al siguiente turno
   const handleAvanzarTurno = async () => {
     try {
@@ -22,9 +24,7 @@ const PanelMedico = () => {
       }
     } catch (error) {
       console.error('Error al avanzar turno:', error);
-      if (error.response && error.response.status === 404) {
-        setEstado('sin_turnos');
-      }
+      setEstado('sin_turnos');
     }
   };
 
@@ -54,9 +54,10 @@ const PanelMedico = () => {
   const obtenerTurnosEnEspera = async () => {
     try {
       const turnos = await verTurnosEnEspera();
-      setTurnosEnEspera(turnos);
+      setTurnosEnEspera(Array.isArray(turnos) ? turnos : []);
     } catch (error) {
       console.error('Error al obtener turnos en espera:', error);
+      setTurnosEnEspera([]);
     }
   };
 
@@ -65,26 +66,27 @@ const PanelMedico = () => {
     obtenerTurnosEnEspera();
   
     if (socket) {
-      // Manejar nuevos turnos
+      // Manejar eventos de nuevo turno
       socket.on('nuevoTurno', (turno) => {
         if (turno.estado === 'llamado') {
           setTurnoActual(turno);
           setEstado('llamado');
         } else if (turno.estado === 'en espera') {
           setTurnosEnEspera((prevTurnos) => {
+            if (!Array.isArray(prevTurnos)) prevTurnos = [];
             const nuevosTurnos = prevTurnos.filter(t => t.codigo !== turno.codigo);
             return [...nuevosTurnos, turno];
           });
         }
       });      
   
-      // Actualizar lista de turnos en espera
-      socket.on('turnosEnEspera', (turnosEnEspera) => {
-        setTurnosEnEspera(turnosEnEspera);
+      // Manejar eventos de actualización de turnos en espera
+      socket.on('turnosEnEspera', (nuevosTurnosEnEspera) => {
+        setTurnosEnEspera(Array.isArray(nuevosTurnosEnEspera) ? nuevosTurnosEnEspera : []);
       });
     }
   
-    // Limpiar listeners al desmontar
+    // Limpiar listeners al desmontar el componente
     return () => {
       if (socket) {
         socket.off('nuevoTurno');
@@ -97,16 +99,20 @@ const PanelMedico = () => {
   return (
     <div className="panel-medico">
       <h2>Panel Médico</h2>
-      {/* Lista de turnos en espera */}
+      {/* Renderizado de turnos en espera */}
       <div className="turnos-en-espera">
         <h3>Turnos en Espera:</h3>
-        <ul>
-          {turnosEnEspera.map((turno) => (
-            <li key={turno.codigo}>
-              <p>Turno: {turno.codigo} - Paciente: {turno.nombre}</p>
-            </li>
-          ))}
-        </ul>
+        {Array.isArray(turnosEnEspera) && turnosEnEspera.length > 0 ? (
+          <ul>
+            {turnosEnEspera.map((turno) => (
+              <li key={turno.codigo}>
+                <p>Turno: {turno.codigo} - Paciente: {turno.nombre}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No hay turnos en espera.</p>
+        )}
       </div>
 
       {/* Renderizado condicional basado en el estado */}
@@ -117,18 +123,18 @@ const PanelMedico = () => {
         </div>
       )}
 
-      {estado === 'llamado' && (
+      {estado === 'llamado' && turnoActual && (
         <div className="estado-llamado">
-          <p>Turno actual: <strong>{turnoActual?.codigo}</strong></p>
-          <p>Nombre del paciente: <strong>{turnoActual?.nombre}</strong></p>
+          <p>Turno actual: <strong>{turnoActual.codigo}</strong></p>
+          <p>Nombre del paciente: <strong>{turnoActual.nombre}</strong></p>
           <button onClick={handleAtenderTurno}>Atender</button>
         </div>
       )}
 
-      {estado === 'atendiendo' && (
+      {estado === 'atendiendo' && turnoActual && (
         <div className="estado-atendiendo">
-          <p>Atendiendo turno: <strong>{turnoActual?.codigo}</strong></p>
-          <p>Nombre del paciente: <strong>{turnoActual?.nombre}</strong></p>
+          <p>Atendiendo turno: <strong>{turnoActual.codigo}</strong></p>
+          <p>Nombre del paciente: <strong>{turnoActual.nombre}</strong></p>
           <button onClick={handleFinalizarTurno}>Finalizar</button>
         </div>
       )}

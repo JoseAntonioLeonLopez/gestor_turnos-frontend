@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import HomePage from './pages/HomePage';
 import CrearTurnoPage from './pages/CrearTurnoPage';
 import TurnosLlamadosPage from './pages/TurnosLlamadosPage';
 import PanelMedicoPage from './pages/PanelMedicoPage';
@@ -10,7 +11,8 @@ function App() {
       <Router>
         {/* Define las rutas de la aplicación */}
         <Routes>
-          <Route path="/" element={<CrearTurnoPage />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/turno" element={<CrearTurnoPage />} />
           <Route path="/llamados" element={<TurnosLlamadosPage />} />
           <Route path="/medico" element={<PanelMedicoPage />} />
         </Routes>

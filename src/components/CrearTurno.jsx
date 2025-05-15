@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { generarTurno } from '../services/api';
 import { useWebSocket } from '../hooks/useWebSocket';
 import '../styles/CrearTurno.css';
