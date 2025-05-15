@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { generarTurno } from '../services/api';
 import { useWebSocket } from '../hooks/useWebSocket';
 import '../styles/CrearTurno.css';
@@ -17,7 +17,7 @@ const CrearTurno = () => {
     setNombre(input);
   
     // Validación: 3-50 caracteres, solo letras y espacios
-    const esValido = /^[a-zA-Z\s]{3,50}$/.test(input);
+    const esValido = /^[a-zA-Z\s]{3,30}$/.test(input);
     setNombreValido(esValido);
   };
 
@@ -28,7 +28,6 @@ const CrearTurno = () => {
     try {
       const nuevoTurno = await generarTurno(nombre);
       setTurno(nuevoTurno);
-      setCountdown(5);
     } catch (error) {
       console.error('Error al generar turno:', error);
     }
@@ -79,6 +78,8 @@ const CrearTurno = () => {
             value={nombre}
             onChange={handleNombreChange}
             className={nombreValido ? 'input-valido' : 'input-invalido'}
+            maxLength={30}
+
           />
           <button 
             className="generar-turno-btn" 
