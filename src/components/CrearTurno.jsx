@@ -16,8 +16,8 @@ const CrearTurno = () => {
     const input = e.target.value;
     setNombre(input);
   
-    // Validación: 3-40 caracteres, solo letras y espacios
-    const esValido = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]{3,40}$/.test(input);
+    // Validación: 3-35 caracteres, solo letras y espacios
+    const esValido = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]{3,35}$/.test(input);
     setNombreValido(esValido);
   };
 
@@ -79,7 +79,7 @@ const CrearTurno = () => {
             onChange={handleNombreChange}
             className={nombreValido ? 'input-valido' : 'input-invalido'}
             required
-            maxLength={40}
+            maxLength={35}
           />
           <button 
             className="generar-turno-btn" 

@@ -7,6 +7,8 @@ const PanelMedico = () => {
   const [turnoActual, setTurnoActual] = useState(null);
   const [estado, setEstado] = useState('espera');
   const [turnosEnEspera, setTurnosEnEspera] = useState([]);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [tooltipContent, setTooltipContent] = useState('');
   const { socket } = useWebSocket();
 
   useEffect(() => {
@@ -118,51 +120,71 @@ const PanelMedico = () => {
     }
   };
 
+  const mostrarTooltip = (nombre) => {
+    setTooltipContent(nombre);
+    setTooltipVisible(true);
+    setTimeout(() => setTooltipVisible(false), 3000); // Ocultar después de 3 segundos
+  };
+
   // Renderizado del componente
   return (
     <div className="panel-medico">
-      <h2>Panel Médico</h2>
-      {/* Lista de turnos en espera */}
-      <div className="turnos-en-espera">
-        <h3>Turnos en Espera:</h3>
-        <ul>
-          {turnosEnEspera.map((turno) => (
-            <li key={turno.codigo}>
-              <p>Turno: {turno.codigo} - Paciente: {turno.nombre}</p>
-            </li>
-          ))}
-        </ul>
+      <h2 className="panel-titulo">Panel Médico</h2>
+      <div className="panel-contenido">
+        <div className="turnos-en-espera">
+          <h3>Turnos en Espera:</h3>
+          <ul>
+            {turnosEnEspera.map((turno) => (
+              <li key={turno.codigo}>
+                <span className="turno-codigo">{turno.codigo}</span>
+                <span 
+                  className="turno-nombre" 
+                  onClick={() => mostrarTooltip(turno.nombre)}
+                >
+                  {turno.nombre}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className={`estado-panel estado-${estado}`}>
+          {estado === 'espera' && (
+            <>
+              <p>Esperando turno...</p>
+              <button onClick={handleAvanzarTurno}>Siguiente Turno</button>
+            </>
+          )}
+
+          {(estado === 'llamado' || estado === 'atendiendo') && (
+            <>
+              <p>Turno actual: <strong>{turnoActual?.codigo}</strong></p>
+              <p className="nombre-paciente">
+                Nombre del paciente: 
+                <strong 
+                  onClick={() => mostrarTooltip(turnoActual?.nombre)}
+                >
+                  {turnoActual?.nombre}
+                </strong>
+              </p>
+              {estado === 'llamado' ? (
+                <button onClick={handleAtenderTurno}>Atender</button>
+              ) : (
+                <button onClick={handleFinalizarTurno}>Finalizar</button>
+              )}
+            </>
+          )}
+
+          {estado === 'sin_turnos' && (
+            <>
+              <p>No hay más turnos disponibles.</p>
+              <button onClick={handleAvanzarTurno}>Verificar nuevos turnos</button>
+            </>
+          )}
+        </div>
       </div>
-
-      {/* Renderizado condicional basado en el estado */}
-      {estado === 'espera' && (
-        <div className="estado-espera">
-          <p>Esperando turno...</p>
-          <button onClick={handleAvanzarTurno}>Siguiente Turno</button>
-        </div>
-      )}
-
-      {estado === 'llamado' && (
-        <div className="estado-llamado">
-          <p>Turno actual: <strong>{turnoActual?.codigo}</strong></p>
-          <p>Nombre del paciente: <strong>{turnoActual?.nombre}</strong></p>
-          <button onClick={handleAtenderTurno}>Atender</button>
-        </div>
-      )}
-
-      {estado === 'atendiendo' && (
-        <div className="estado-atendiendo">
-          <p>Atendiendo turno: <strong>{turnoActual?.codigo}</strong></p>
-          <p>Nombre del paciente: <strong>{turnoActual?.nombre}</strong></p>
-          <button onClick={handleFinalizarTurno}>Finalizar</button>
-        </div>
-      )}
-
-      {estado === 'sin_turnos' && (
-        <div className="estado-sin-turnos">
-          <p>No hay más turnos disponibles.</p>
-          <button onClick={handleAvanzarTurno}>Verificar nuevos turnos</button>
-        </div>
+      {tooltipVisible && (
+        <div className="tooltip">{tooltipContent}</div>
       )}
     </div>
   );
