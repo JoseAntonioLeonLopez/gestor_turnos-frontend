@@ -59,12 +59,18 @@
   gap: 15px;
 }
 
+/* Envoltorio del input con mensaje informativo */
+.input-wrapper {
+  width: 100%;
+  max-width: 350px;
+  position: relative;
+}
+
 /* Campo de entrada del nombre */
 input {
   padding: 15px;
   font-size: 1.4rem;
   width: 100%;
-  max-width: 350px;
   border: 2px solid #ccc;
   border-radius: 8px;
   outline: none;
@@ -77,6 +83,23 @@ input {
 
 .input-invalido {
   border-color: #dc3545;
+}
+
+/* Estilo para el mensaje informativo */
+.input-info {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  color: #555;
+  font-size: 0.85rem;
+  text-align: left;
+  padding-left: 5px;
+}
+
+.info-icon {
+  color: #007f3d;
+  margin-right: 6px;
+  flex-shrink: 0;
 }
 
 /* Botón de generar turno */
@@ -135,6 +158,10 @@ input {
     font-size: 1.2rem;
     padding: 12px;
   }
+  
+  .input-info {
+    font-size: 0.75rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -162,5 +189,9 @@ input {
   input {
     font-size: 1rem;
     padding: 10px;
+  }
+  
+  .input-info {
+    font-size: 0.7rem;
   }
 }

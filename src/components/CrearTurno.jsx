@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { generarTurno } from '../services/api';
 import { useWebSocket } from '../hooks/useWebSocket';
+import { FaInfoCircle } from 'react-icons/fa';
 import '../styles/CrearTurno.css';
 
 const CrearTurno = () => {
@@ -70,17 +71,22 @@ const CrearTurno = () => {
           <p>Tiempo restante: {countdown} segundos</p>
         </div>
       ) : (
-        // Formulario para generar un nuevo turno
         <div className="input-container">
-          <input
-            type="text"
-            placeholder="Introduce tu nombre"
-            value={nombre}
-            onChange={handleNombreChange}
-            className={nombreValido ? 'input-valido' : 'input-invalido'}
-            required
-            maxLength={35}
-          />
+          <div className="input-wrapper">
+            <input
+              type="text"
+              placeholder="Introduce tu nombre"
+              value={nombre}
+              onChange={handleNombreChange}
+              className={nombreValido ? 'input-valido' : 'input-invalido'}
+              required
+              maxLength={35}
+            />
+            <div className="input-info">
+              <FaInfoCircle className="info-icon" />
+              <span>El nombre debe contener entre 3 y 35 caracteres (solo letras)</span>
+            </div>
+          </div>
           <button 
             className="generar-turno-btn" 
             onClick={handleGenerarTurno} 
