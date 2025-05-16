@@ -128,8 +128,8 @@ const PanelMedico = () => {
 
   // Renderizado del componente
   return (
-    <div className="panel-medico">
-      <h2 className="panel-titulo">Panel Médico</h2>
+  <div className="panel-medico">
+    <h2 className="panel-titulo">Panel Médico</h2>
       <div className="panel-contenido">
         <div className="turnos-en-espera">
           <h3>Turnos en Espera:</h3>
@@ -160,7 +160,7 @@ const PanelMedico = () => {
             <>
               <p>Turno actual: <strong>{turnoActual?.codigo}</strong></p>
               <p className="nombre-paciente">
-                Nombre del paciente: 
+                Nombre del paciente: <br />
                 <strong 
                   onClick={() => mostrarTooltip(turnoActual?.nombre)}
                 >
@@ -170,7 +170,10 @@ const PanelMedico = () => {
               {estado === 'llamado' ? (
                 <button onClick={handleAtenderTurno}>Atender</button>
               ) : (
-                <button onClick={handleFinalizarTurno}>Finalizar</button>
+                <>
+                  <p className="estado-atencion">Estado: <strong>Atendiendo al paciente</strong></p>
+                  <button onClick={handleFinalizarTurno}>Finalizar Atención</button>
+                </>
               )}
             </>
           )}
