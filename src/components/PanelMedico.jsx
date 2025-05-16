@@ -1,56 +1,114 @@
-import React, { useState, useEffect } from 'react';
-import { avanzarTurno, atenderTurno, finalizarTurno, verTurnosEnEspera } from '../services/api';
+import { useState, useEffect } from 'react';
+import { avanzarTurno, atenderTurno, finalizarTurno, verTurnosEnEspera, obtenerEstadoPanel } from '../services/api';
 import { useWebSocket } from '../hooks/useWebSocket';
 import '../styles/PanelMedico.css';
 
 const PanelMedico = () => {
-  // Estados para manejar el turno actual, estado del panel y turnos en espera
   const [turnoActual, setTurnoActual] = useState(null);
-  const [estado, setEstado] = useState('espera'); // 'espera', 'llamado', 'atendiendo', 'sin_turnos'
+  const [estado, setEstado] = useState('espera');
   const [turnosEnEspera, setTurnosEnEspera] = useState([]);
   const { socket } = useWebSocket();
 
-  // Función para avanzar al siguiente turno
+  useEffect(() => {
+    const cargarEstadoInicial = async () => {
+      try {
+        const estadoGuardado = localStorage.getItem('estadoPanel');
+        if (estadoGuardado) {
+          const { estado: estadoGuardadoObj, turnoActual: turnoActualGuardado } = JSON.parse(estadoGuardado);
+          setEstado(estadoGuardadoObj);
+          setTurnoActual(turnoActualGuardado);
+        } else {
+          const { estado: estadoObtenido, turnoActual: turnoActualObtenido } = await obtenerEstadoPanel();
+          setEstado(estadoObtenido);
+          setTurnoActual(turnoActualObtenido);
+        }
+        await obtenerTurnosEnEspera();
+      } catch (error) {
+        console.error('Error al cargar el estado inicial:', error);
+      }
+    };
+
+    cargarEstadoInicial();
+  }, []);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('nuevoTurno', (turno) => {
+        if (turno.estado === 'llamado' || turno.estado === 'atendiendo') {
+          actualizarEstadoPanel(turno);
+        } else if (turno.estado === 'en espera') {
+          setTurnosEnEspera((prevTurnos) => [...prevTurnos.filter(t => t.codigo !== turno.codigo), turno]);
+        }
+      });
+
+      socket.on('turnosEnEspera', (turnos) => {
+        setTurnosEnEspera(turnos);
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.off('nuevoTurno');
+        socket.off('turnosEnEspera');
+      }
+    };
+  }, [socket]);
+
+  const actualizarEstadoPanel = (turno) => {
+    let nuevoEstado = estado;
+    let nuevoTurnoActual = turnoActual;
+
+    if (turno.estado === 'llamado') {
+      nuevoEstado = 'llamado';
+      nuevoTurnoActual = turno;
+    } else if (turno.estado === 'atendiendo') {
+      nuevoEstado = 'atendiendo';
+      nuevoTurnoActual = turno;
+    } else if (turno.estado === 'en espera') {
+      setTurnosEnEspera((prevTurnos) => [...prevTurnos.filter(t => t.codigo !== turno.codigo), turno]);
+    }
+    
+    setEstado(nuevoEstado);
+    setTurnoActual(nuevoTurnoActual);
+    
+    // Guardar el estado en localStorage
+    localStorage.setItem('estadoPanel', JSON.stringify({ estado: nuevoEstado, turnoActual: nuevoTurnoActual }));
+  };
+
   const handleAvanzarTurno = async () => {
     try {
       const nuevoTurno = await avanzarTurno();
       if (nuevoTurno) {
-        setTurnoActual(nuevoTurno);
-        setEstado('llamado');
+        actualizarEstadoPanel(nuevoTurno);
       } else {
         setEstado('sin_turnos');
+        localStorage.setItem('estadoPanel', JSON.stringify({ estado: 'sin_turnos', turnoActual: null }));
       }
     } catch (error) {
       console.error('Error al avanzar turno:', error);
-      if (error.response && error.response.status === 404) {
-        setEstado('sin_turnos');
-      }
     }
   };
 
-  // Función para atender el turno actual
   const handleAtenderTurno = async () => {
     try {
       const turnoAtendiendo = await atenderTurno();
-      setTurnoActual(turnoAtendiendo);
-      setEstado('atendiendo');
+      actualizarEstadoPanel(turnoAtendiendo);
     } catch (error) {
       console.error('Error al atender turno:', error);
     }
   };
 
-  // Función para finalizar el turno actual
   const handleFinalizarTurno = async () => {
     try {
       await finalizarTurno();
       setTurnoActual(null);
       setEstado('espera');
+      localStorage.setItem('estadoPanel', JSON.stringify({ estado: 'espera', turnoActual: null }));
     } catch (error) {
       console.error('Error al finalizar turno:', error);
     }
   };
 
-  // Función para obtener los turnos en espera
   const obtenerTurnosEnEspera = async () => {
     try {
       const turnos = await verTurnosEnEspera();
@@ -59,39 +117,6 @@ const PanelMedico = () => {
       console.error('Error al obtener turnos en espera:', error);
     }
   };
-
-  // Efecto para cargar turnos en espera y manejar eventos de WebSocket
-  useEffect(() => {
-    obtenerTurnosEnEspera();
-  
-    if (socket) {
-      // Manejar nuevos turnos
-      socket.on('nuevoTurno', (turno) => {
-        if (turno.estado === 'llamado') {
-          setTurnoActual(turno);
-          setEstado('llamado');
-        } else if (turno.estado === 'en espera') {
-          setTurnosEnEspera((prevTurnos) => {
-            const nuevosTurnos = prevTurnos.filter(t => t.codigo !== turno.codigo);
-            return [...nuevosTurnos, turno];
-          });
-        }
-      });      
-  
-      // Actualizar lista de turnos en espera
-      socket.on('turnosEnEspera', (turnosEnEspera) => {
-        setTurnosEnEspera(turnosEnEspera);
-      });
-    }
-  
-    // Limpiar listeners al desmontar
-    return () => {
-      if (socket) {
-        socket.off('nuevoTurno');
-        socket.off('turnosEnEspera');
-      }
-    };
-  }, [socket]);
 
   // Renderizado del componente
   return (

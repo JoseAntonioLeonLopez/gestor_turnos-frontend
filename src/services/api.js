@@ -36,3 +36,9 @@ export const finalizarTurno = async () => {
   const response = await axios.post(`${API_URL}/finalizar`);
   return response.data;
 };
+
+// Función para obtener el estado del panel
+export const obtenerEstadoPanel = async () => {
+  const response = await axios.get(`${API_URL}/estado-panel`);
+  return response.data;
+};

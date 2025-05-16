@@ -78,8 +78,8 @@ const CrearTurno = () => {
             value={nombre}
             onChange={handleNombreChange}
             className={nombreValido ? 'input-valido' : 'input-invalido'}
+            required
             maxLength={30}
-
           />
           <button 
             className="generar-turno-btn" 
